@@ -14,6 +14,8 @@ import useRegisterModal from '@/app/hooks/useRegisterModal';
 import Modal from './Modal';
 import Heading from '../Heading';
 import Input from '../inputs/Input';
+import toast from 'react-hot-toast';
+import Button from '../Button';
 
 const RegisterModal = () => {
     const RegisterModal = useRegisterModal();
@@ -39,7 +41,7 @@ const RegisterModal = () => {
             RegisterModal.onClose();
          })
           .catch((error)=>{
-            console.log(error);
+            toast.error("Hay Aksi! Bir şeyler ters gitti");
           })
           .finally(()=>{
             setIsLoading(false);
@@ -61,6 +63,59 @@ const RegisterModal = () => {
           errors={errors}
           required
         />
+        <Input
+          id="name"
+          label='Ad'
+          disabled={isLoading}
+          register={register}
+          errors={errors}
+          required
+        />
+        <Input
+          id="password"
+          type='password'
+          label='Şifre'
+          disabled={isLoading}
+          register={register}
+          errors={errors}
+          required
+        />
+      </div>
+    )
+    
+    const footerContent=(
+      <div className='flex flex-col gap-4 mt-3'>
+        <hr />
+        <Button
+          outline
+          label='Google ile kaydol'
+          icon={FcGoogle}
+          onClick={()=>{}}
+        />
+        <div
+          className='
+            text-neutral-500
+            text-center
+            mt-4
+            font-light
+          '
+        >
+          <div className='justify-center flex flex-row items-center gap-2'>
+            <div>
+              Zaten bir hesabınız var mı?
+            </div>
+            <div
+              onClick={RegisterModal.onClose}
+              className='
+                text-neutral-800
+                cursor-pointer
+                hover:underline 
+              '
+            >
+              Giriş Yap
+            </div>
+          </div>
+        </div>
       </div>
     )
 
@@ -73,6 +128,7 @@ const RegisterModal = () => {
           onClose={RegisterModal.onClose}
           onSubmit={handleSubmit(onSubmit)}
           body={bodyContent}
+          footer={footerContent}
         />
      );
 }
