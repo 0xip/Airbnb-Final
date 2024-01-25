@@ -7,6 +7,7 @@ import{
     SubmitHandler,
     useForm
 } from 'react-hook-form';
+import {signIn} from "next-auth/react";
 
 import useRegisterModal from '@/app/hooks/useRegisterModal';
 import Modal from './Modal';
@@ -14,9 +15,13 @@ import Heading from '../Heading';
 import Input from '../inputs/Input';
 import toast from 'react-hot-toast';
 import Button from '../Button';
+import useLoginModal from '@/app/hooks/useLoginModal';
+import { useRouter } from 'next/navigation'; //new way to do this, not "next/router"
 
-const RegisterModal = () => {
+const LoginModal = () => {
+    const router = useRouter();
     const RegisterModal = useRegisterModal();
+    const LoginModal = useLoginModal();
     const [isLoading, setIsLoading] = useState(false);
 
     const {
@@ -25,7 +30,6 @@ const RegisterModal = () => {
         formState: { errors }
     } = useForm<FieldValues>({
         defaultValues:{
-            name:'',
             email:'',
             password:''
         }
@@ -34,36 +38,35 @@ const RegisterModal = () => {
     const onSubmit:SubmitHandler<FieldValues> = (data) => {
         setIsLoading(true);
 
-        axios.post('/api/register', data)
-         .then(()=>{
-            RegisterModal.onClose();
-         })
-          .catch((error)=>{
-            toast.error("Hay Aksi! Bir şeyler ters gitti");
-          })
-          .finally(()=>{
-            setIsLoading(false);
-          })
+        signIn('credentials',{
+          ...data,
+          redirect:false,
+        })
+        .then((callback)=>{
+          setIsLoading(false);
+          
+          if(callback?.ok){
+            toast.success('Giriş Başarılı')
+            router.refresh();
+            LoginModal.onClose();
+          }
+
+          if (callback?.error){
+            toast.error(callback.error);
+          }
+        })
     }
 
     const bodyContent=(
       <div className='flex flex-col gap-4'>
         <Heading
-          title="Airbnb'ye Hoşgeldiniz!"
-          subtitle="Hesabınızı oluşturun"
+          title="Tekrar Hoşgeldiniz!"
+          subtitle="Hesabınıza Giriş Yapın"
           center
         />
         <Input
           id="email"
           label='Email'
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-          required
-        />
-        <Input
-          id="name"
-          label='Ad'
           disabled={isLoading}
           register={register}
           errors={errors}
@@ -114,10 +117,10 @@ const RegisterModal = () => {
     return ( 
         <Modal
           disabled={isLoading}
-          isOpen={RegisterModal.isOpen}
-          title="Kaydol"
+          isOpen={LoginModal.isOpen}
+          title="Giriş Yap"
           actionLabel='Devam et'
-          onClose={RegisterModal.onClose}
+          onClose={LoginModal.onClose}
           onSubmit={handleSubmit(onSubmit)}
           body={bodyContent}
           footer={footerContent}
@@ -125,4 +128,4 @@ const RegisterModal = () => {
      );
 }
  
-export default RegisterModal;
+export default LoginModal;

@@ -5,9 +5,19 @@ import Avatar from "../Avatar";
 import { useCallback, useState } from "react";
 import MenuItem from "./MenuItem";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
+import useLoginModal from "@/app/hooks/useLoginModal";
+import { User } from "@prisma/client";
+import { signOut } from "next-auth/react";
 
-const UserMenu = () => {
+interface UserMenuProps {
+    currentUser? : User | null;
+}
+
+const UserMenu: React.FC<UserMenuProps> = ({
+    currentUser
+}) => {
     const registerModal =useRegisterModal();
+    const loginModal = useLoginModal();
     const[isOpen,SetIsOpen]=useState(false);
     
     const toggleOpen=useCallback(()=>{
@@ -54,7 +64,7 @@ const UserMenu = () => {
                 >
                     <AiOutlineMenu/>
                     <div>
-                      <Avatar/>
+                      <Avatar src={currentUser?.image}/>
                     </div>
                 </div>
             </div>
@@ -74,9 +84,37 @@ const UserMenu = () => {
                 "
                 >
                     <div className="flex flex-col cursor-pointer">
+                        {currentUser ?(
+                            <>
+                            <MenuItem
+                              onClick={() => {}}
+                              label="Gezilerim"
+                            />
+                             <MenuItem
+                              onClick={() => {}}
+                              label="Favorilerim"
+                            />
+                            <MenuItem
+                              onClick={() => {}}
+                              label="Rezervasyonlarım"
+                            />
+                            <MenuItem
+                              onClick={() => {}}
+                              label="Önceliklerim"
+                            />
+                            <MenuItem
+                              onClick={() => {}}
+                              label="Evim evim Airbnb'm"
+                            />
+                            <MenuItem
+                              onClick={() => signOut()}
+                              label="Çıkış Yap"
+                            />
+                        </>
+                        ):(
                         <>
                             <MenuItem
-                              onClick={()=>{}}
+                              onClick={loginModal.onOpen}
                               label="Login"
                             />
                              <MenuItem
@@ -84,6 +122,7 @@ const UserMenu = () => {
                               label="Sign Up"
                             />
                         </>
+                        )}
                     </div>
                 </div>
             )}
