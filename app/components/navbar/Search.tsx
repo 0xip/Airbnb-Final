@@ -32,7 +32,7 @@ const Search = () => {
                 px-6
                 "
                 >
-                    Anywhere
+                    Herhangi Bir Yer
                 </div>
                 <div
                 className="
@@ -46,7 +46,7 @@ const Search = () => {
                 text-center
                 "
                 >
-                    Any week
+                    Herhangi Hafta 
                 </div>
                 <div
                     className="
@@ -60,7 +60,7 @@ const Search = () => {
                     gap-3
                     "
                 >
-                    <div className="hidden sm:block">Add Guests</div>
+                    <div className="hidden sm:block">Misafir Ekle</div>
                     <div
                         className="
                         p-2

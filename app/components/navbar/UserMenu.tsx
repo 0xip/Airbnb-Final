@@ -8,6 +8,7 @@ import useRegisterModal from "@/app/hooks/useRegisterModal";
 import useLoginModal from "@/app/hooks/useLoginModal";
 import { User } from "@prisma/client";
 import { signOut } from "next-auth/react";
+import useRentModal from "@/app/hooks/useRentModal";
 
 interface UserMenuProps {
     currentUser? : User | null;
@@ -19,16 +20,25 @@ const UserMenu: React.FC<UserMenuProps> = ({
     const registerModal =useRegisterModal();
     const loginModal = useLoginModal();
     const[isOpen,SetIsOpen]=useState(false);
+    const rentModal = useRentModal();
     
     const toggleOpen=useCallback(()=>{
         SetIsOpen((value)=>!value);
     }, []);
 
+    const onRent = useCallback(() => {
+      if(!currentUser){
+        return loginModal.onOpen();
+      }
+      
+      rentModal.onOpen();
+    }, [currentUser, loginModal, rentModal]);
+
     return ( 
         <div className="relative">
             <div className="flex flex-row items-center gap-3">
                 <div
-                    onClick={() => {}}
+                    onClick={onRent}
                     className="
         
                         md-block
@@ -42,7 +52,7 @@ const UserMenu: React.FC<UserMenuProps> = ({
                         cursor-pointer
                     "
                 >
-                    Airbnb your home
+                    Airbnb senin evin
                 </div>
                 <div
                 onClick={toggleOpen}
@@ -103,8 +113,8 @@ const UserMenu: React.FC<UserMenuProps> = ({
                               label="Önceliklerim"
                             />
                             <MenuItem
-                              onClick={() => {}}
-                              label="Evim evim Airbnb'm"
+                              onClick={rentModal.onOpen}
+                              label="Airbnb senin evin"
                             />
                             <MenuItem
                               onClick={() => signOut()}
@@ -115,11 +125,11 @@ const UserMenu: React.FC<UserMenuProps> = ({
                         <>
                             <MenuItem
                               onClick={loginModal.onOpen}
-                              label="Login"
+                              label="Giriş Yap"
                             />
                              <MenuItem
                               onClick={registerModal.onOpen}
-                              label="Sign Up"
+                              label="Kaydol"
                             />
                         </>
                         )}

@@ -9,15 +9,18 @@ import{
 } from 'react-hook-form';
 
 import useRegisterModal from '@/app/hooks/useRegisterModal';
+import useLoginModal from '@/app/hooks/useLoginModal';
 import Modal from './Modal';
 import Heading from '../Heading';
 import Input from '../inputs/Input';
 import toast from 'react-hot-toast';
 import Button from '../Button';
 
+
 const RegisterModal = () => {
     const RegisterModal = useRegisterModal();
     const [isLoading, setIsLoading] = useState(false);
+    const LoginModal = useLoginModal();
 
     const {
         register,
@@ -45,6 +48,11 @@ const RegisterModal = () => {
             setIsLoading(false);
           })
     }
+
+    const toggle = useCallback(() => {
+      RegisterModal.onClose();
+      LoginModal.onOpen();
+  }, [LoginModal, RegisterModal]);
 
     const bodyContent=(
       <div className='flex flex-col gap-4'>
@@ -97,7 +105,7 @@ const RegisterModal = () => {
               Zaten bir hesabınız var mı?
             </div>
             <div
-              onClick={RegisterModal.onClose}
+              onClick={toggle}
               className='
                 text-neutral-800
                 cursor-pointer
