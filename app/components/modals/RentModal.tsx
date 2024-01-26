@@ -8,12 +8,13 @@ import Heading from "../Heading";
 import CategoryInput from "../inputs/CategoryInput";
 import { FieldValues, useForm } from "react-hook-form";
 import CountrySelect from "../inputs/CountrySelect";
+import dynamic from "next/dynamic";
 
 enum STEPS{
     CATEGORY=0,
     LOCATION=1,
     INFO=2,
-    PHOTOS=3,
+    IMAGES=3,
     DESCRIPTION=4,
     PRICE=5
 }
@@ -46,6 +47,9 @@ const RentModal = () => {
     
     const category = watch("category");
     const location = watch("location");
+
+    const Map = useMemo(() => dynamic(() => import("../Map"),//burada Map componentini dinamik olarak import ettik
+    {ssr:false}), [location]);
 
     const setCustomValue = (id: string, value: any) => {
         setValue(id, value, {
@@ -114,6 +118,9 @@ const RentModal = () => {
                 <CountrySelect
                   value={location}
                   onChange={(value) => setCustomValue("location", value)}
+                />
+                <Map
+                  center={location?.latlng}
                 />
             </div>
         )};
