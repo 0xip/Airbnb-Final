@@ -9,6 +9,9 @@ import CategoryInput from "../inputs/CategoryInput";
 import { FieldValues, useForm } from "react-hook-form";
 import CountrySelect from "../inputs/CountrySelect";
 import dynamic from "next/dynamic";
+import Counter from "../inputs/Counter";
+import ImageUpload from "../inputs/ImageUpload";
+import Input from "../inputs/Input";
 
 enum STEPS{
     CATEGORY=0,
@@ -23,6 +26,7 @@ const RentModal = () => {
     const rentModal = useRentModal();
 
     const [step, setStep] = useState(STEPS.CATEGORY);
+    const [isLoading, setIsLoading] = useState(false);
 
     const {
         register,
@@ -33,7 +37,7 @@ const RentModal = () => {
         reset
     } = useForm<FieldValues>({
         defaultValues: {
-            category: "",
+            category: '',
             location: null,
             guestCount: 1,
             roomCount: 1,
@@ -47,6 +51,9 @@ const RentModal = () => {
     
     const category = watch("category");
     const location = watch("location");
+    const guestCount = watch("guestCount");
+    const roomCount = watch("roomCount");
+    const bathroomCount = watch("bathroomCount");
 
     const Map = useMemo(() => dynamic(() => import("../Map"),//burada Map componentini dinamik olarak import ettik
     {ssr:false}), [location]);
@@ -124,6 +131,95 @@ const RentModal = () => {
                 />
             </div>
         )};
+
+    if(step === STEPS.INFO){
+        bodyContent=(
+            <div className="flex flex-col gap-8">
+                <Heading
+                    title="Konumunuz hakkında biraz bilgi verin"
+                    subtitle="Sizi bulmalarına yardım edin"
+                />
+                <Counter 
+                    title="Misafir"
+                    subtitle="Kaç misafir kalabilir?"
+                    value={guestCount}
+                    onChange={(value) => setCustomValue("guestCount", value)}
+                />
+                <hr />
+                <Counter 
+                    title="Oda"
+                    subtitle="Kaç oda var?"
+                    value={roomCount}
+                    onChange={(value) => setCustomValue("roomCount", value)}
+                />
+                <hr />
+                <Counter 
+                    title="Banyo"
+                    subtitle="Kaç banyo var?"
+                    value={bathroomCount}
+                    onChange={(value) => setCustomValue("bathroomCount", value)}
+                />
+            </div>
+        ) };
+
+    if(step === STEPS.IMAGES){
+        bodyContent=(
+            <div className="flex flex-col gap-8">
+                <Heading
+                    title="Yerinizin fotoğraflarını yükleyin"
+                    subtitle="Misafirlerinizin yerinizi görmesine yardımcı olun"
+                />
+                <ImageUpload/>
+            </div>
+        ) };
+
+    if(step === STEPS.DESCRIPTION){
+        bodyContent=(
+            <div className="flex flex-col gap-8">
+                <Heading
+                    title="Yerinizi nasıl tanımlarsınız?"
+                    subtitle="Lütfen kısa ve açıklayıcı olun"
+                />
+                <Input 
+                  id="title"
+                  label="Başlık"
+                  disabled={isLoading}
+                  register={register}
+                  errors={errors}
+                  required
+                />
+                <hr />
+                <Input 
+                  id="description"
+                  label="Açıklama"
+                  disabled={isLoading}
+                  register={register}
+                  errors={errors}
+                  required
+                />
+            </div>
+        ) };
+
+
+    if(step === STEPS.PRICE){
+        bodyContent=(
+            <div className="flex flex-col gap-8">
+                <Heading
+                    title="Şimdi bir fiyat belirleyin"
+                    subtitle="Bir gece için ne kadar ücret almak istiyorsunuz?"
+                />
+                <Input 
+                  id="price"
+                  label="Fiyat"
+                  formatPrice
+                  type="number"
+                  disabled={isLoading}
+                  register={register}
+                  errors={errors}
+                  required
+                />
+            </div>
+        ) };
 
     return ( 
         <Modal
