@@ -6,12 +6,15 @@ import useRentModal from "@/app/hooks/useRentModal";
 import { categories } from "../navbar/Categories";
 import Heading from "../Heading";
 import CategoryInput from "../inputs/CategoryInput";
-import { FieldValues, useForm } from "react-hook-form";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import CountrySelect from "../inputs/CountrySelect";
 import dynamic from "next/dynamic";
 import Counter from "../inputs/Counter";
 import ImageUpload from "../inputs/ImageUpload";
 import Input from "../inputs/Input";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 enum STEPS{
     CATEGORY=0,
@@ -23,6 +26,7 @@ enum STEPS{
 }
 
 const RentModal = () => {
+    const router=useRouter();
     const rentModal = useRentModal();
 
     const [step, setStep] = useState(STEPS.CATEGORY);
@@ -71,6 +75,28 @@ const RentModal = () => {
 
     const onNext = () => {
         setStep((value) => value + 1);
+    };
+
+    const onSubmit: SubmitHandler<FieldValues> = (data) => {
+        if(step !== STEPS.PRICE){
+            return onNext();
+        } 
+        setIsLoading(true);
+
+        axios.post("/api/listings", data)
+        .then(() => {
+            toast.success("İlanınız başarıyla oluşturuldu");
+            router.refresh();
+            reset();
+            setStep(STEPS.CATEGORY);
+            rentModal.onClose();
+        })
+        .catch(() => {
+            toast.error("Bir hata oluştu");
+        }) .finally(() => {
+            setIsLoading(false);
+        })
+
     };
 
     const actionLabel = useMemo(() => {
@@ -136,8 +162,8 @@ const RentModal = () => {
         bodyContent=(
             <div className="flex flex-col gap-8">
                 <Heading
-                    title="Konumunuz hakkında biraz bilgi verin"
-                    subtitle="Sizi bulmalarına yardım edin"
+                    title=" Kaç kişi kalabilir?"
+                    subtitle=" Misafirleriniz için yerinizin ne kadar uygun olduğunu belirtin"
                 />
                 <Counter 
                     title="Misafir"
@@ -225,11 +251,11 @@ const RentModal = () => {
         <Modal
             isOpen={rentModal.isOpen}
             onClose={rentModal.onClose}
-            onSubmit={onNext}
+            onSubmit={handleSubmit(onSubmit)}
             actionLabel={actionLabel}
             secondaryActionLabel={secondaryActionLabel}
             secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
-            title="Airbnb senin evin"
+            title="Evini Airbnb'de Kirala"
             body={bodyContent}
         />
      );

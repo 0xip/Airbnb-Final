@@ -53,12 +53,7 @@ export const categories=[
         label: 'Kamp',
         icon:GiForestCamp,  
         description: "Bu ev kamp alanına yakın bir konumdadır"
-      },
-      {
-        label: 'Sahil',
-        icon:TbBeach,  
-        description: "Bu ev sahile yakın bir konumdadır"
-      },
+      }
 ]
 
 const Categories = () => {
